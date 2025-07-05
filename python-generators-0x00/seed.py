@@ -16,6 +16,7 @@ def connect_db():
         password="rootpassword", 
     )
 
+
 def create_database(connection):
     cursor = connection.cursor()
     try:
@@ -97,5 +98,3 @@ if __name__ == "__main__":
             print(f"Error: {err}")
     except requests.RequestException as req_err:
         print(f"Failed to fetch CSV: {req_err}")
-
-# pip install mysql-connector-python requests
