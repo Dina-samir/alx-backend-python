@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+"""Unit tests for utility functions in utils.py.
+
+Tests include:
+- access_nested_map: valid and invalid key access
+- get_json: mocking external requests
+- memoize: method result caching behavior
+"""
 
 import unittest
 from unittest.mock import patch, Mock
