@@ -79,7 +79,8 @@ class TestMemoize(unittest.TestCase):
     """Unit test for the memoize decorator"""
 
     def test_memoize(self):
-        """Test that memoize caches the method result and avoids repeated calls"""
+        """caches the method result and avoids repeated calls"""
+
         class TestClass:
             def a_method(self):
                 """Simple method that returns a constant value"""
@@ -87,7 +88,7 @@ class TestMemoize(unittest.TestCase):
 
             @memoize
             def a_property(self):
-                """A memoized property that calls a_method once and caches the result"""
+                """A property calls a_method once and caches the result"""
                 return self.a_method()
 
         with patch.object(TestClass, "a_method", return_value=42) as mock_m:
