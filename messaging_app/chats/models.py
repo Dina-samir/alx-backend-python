@@ -12,6 +12,7 @@ class CustomUser(AbstractUser):
     ]
 
     user_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
+    # password is inherited from AbstractUser and stored as a secure hash
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
