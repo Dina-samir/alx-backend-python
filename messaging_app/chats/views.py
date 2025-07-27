@@ -32,7 +32,8 @@ class RegisterView(APIView):
 
 
 class MessageViewSet(viewsets.ModelViewSet):
-    queryset = Message.objects.all().order_by('-timestamp')
+    #queryset = Message.objects.all().order_by('-timestamp')
+    queryset = Message.objects.all().order_by('-sent_at')
     serializer_class = MessageSerializer
     permission_classes = [IsAuthenticated, IsParticipantOfConversation]
     filter_backends = [DjangoFilterBackend]

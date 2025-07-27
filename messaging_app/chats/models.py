@@ -25,11 +25,11 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f"{self.email} ({self.role})"
 
-class User(AbstractUser):
-    first_name = models.CharField(max_length=25)
-    last_name = models.CharField(max_length=25)
-    email = models.CharField(max_length=225)
-    phone_number = models.IntegerField()
+# class User(AbstractUser):
+#     first_name = models.CharField(max_length=25)
+#     last_name = models.CharField(max_length=25)
+#     email = models.CharField(max_length=225)
+#     phone_number = models.IntegerField()
 
 class Conversation(models.Model):
     conversation_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, db_index=True)
