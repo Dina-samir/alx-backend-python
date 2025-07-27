@@ -11,6 +11,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from .permissions import IsParticipantOfConversation, IsParticipantInConversation
 
 
+from .permissions import IsParticipantOfConversation
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import MessageFilter
+from rest_framework.permissions import IsAuthenticated
+
+
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 
@@ -24,6 +30,13 @@ class RegisterView(APIView):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all().order_by('-timestamp')
+    serializer_class = MessageSerializer
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MessageFilter
 
 class ConversationViewSet(viewsets.ModelViewSet):
     serializer_class = ConversationSerializer

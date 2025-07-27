@@ -1,7 +1,7 @@
 from rest_framework import permissions
 from rest_framework.exceptions import PermissionDenied
 from .models import Conversation
-
+from rest_framework.status import HTTP_403_FORBIDDEN
 
 class IsParticipantOfConversation(permissions.BasePermission):
     """
@@ -15,10 +15,14 @@ class IsParticipantOfConversation(permissions.BasePermission):
 
         if request.method in ["PUT", "PATCH", "DELETE"]:
             raise PermissionDenied("You cannot modify this conversation.")
-
+        
+        if not obj.sender == request.user or obj.recipient == request.user:
+            raise PermissionDenied(detail="You are not allowed to view this message.", code=HTTP_403_FORBIDDEN)
+        
         return request.user in obj.participants.all()
 
 
+        
 class IsParticipantInConversation(permissions.BasePermission):
     """
     Allow access only to participants in a given conversation (via conversation_pk).
