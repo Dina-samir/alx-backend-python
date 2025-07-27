@@ -3,17 +3,38 @@
 from rest_framework import viewsets, status, filters
 from rest_framework.response import Response
 from .models import Conversation, Message, CustomUser
-from .serializers import ConversationSerializer, MessageSerializer
+from .serializers import ConversationSerializer, MessageSerializer, UserSerializer
 from django.shortcuts import get_object_or_404
+
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .permissions import IsParticipantOfConversation, IsParticipantInConversation
+
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "User registered successfully"},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ConversationViewSet(viewsets.ModelViewSet):
-    queryset = Conversation.objects.all()
     serializer_class = ConversationSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['participants__email', 'participants__first_name', 'participants__last_name']
     ordering_fields = ['created_at']
     ordering = ['-created_at']
+    permission_classes = [IsAuthenticated, IsParticipantOfConversation]
+
+    def get_queryset(self):
+        return Conversation.objects.filter(participants=self.request.user)
 
     def create(self, request, *args, **kwargs):
         participant_ids = request.data.get('participants', [])
@@ -41,10 +62,14 @@ class MessageViewSet(viewsets.ModelViewSet):
     search_fields = ['message_body', 'sender__email']
     ordering_fields = ['sent_at']
     ordering = ['-sent_at']
+    permission_classes = [IsAuthenticated, IsParticipantInConversation]
 
     def get_queryset(self):
         conversation_id = self.kwargs.get('conversation_pk')
-        return Message.objects.filter(conversation_id=conversation_id)
+        return Message.objects.filter(
+            conversation_id=conversation_id,
+            conversation__participants=self.request.user
+        )
 
     def create(self, request, *args, **kwargs):
         conversation_id = self.kwargs.get('conversation_pk')
