@@ -6,17 +6,22 @@ from .models import Conversation
 class IsParticipantOfConversation(permissions.BasePermission):
     """
     Allow access only to participants of a conversation.
-    For conversation-level objects.
+    Disallow updates and deletes for now.
     """
 
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and request.user in obj.participants.all()
+        if not request.user.is_authenticated:
+            return False
+
+        if request.method in ["PUT", "PATCH", "DELETE"]:
+            raise PermissionDenied("You cannot modify this conversation.")
+
+        return request.user in obj.participants.all()
 
 
 class IsParticipantInConversation(permissions.BasePermission):
     """
     Allow access only to participants in a given conversation (via conversation_pk).
-    For message-level views.
     """
 
     def has_permission(self, request, view):
