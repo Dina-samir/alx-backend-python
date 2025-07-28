@@ -2,6 +2,7 @@ from datetime import datetime
 from django.http import HttpResponseForbidden
 import logging
 from datetime import datetime
+from django.http import JsonResponse
 
 class RestrictAccessByTimeMiddleware:
     def __init__(self, get_response):
@@ -16,6 +17,38 @@ class RestrictAccessByTimeMiddleware:
 
 
 
+class OffensiveLanguageMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.request_log = {}
+
+    def __call__(self, request):
+        if request.method == "POST" and request.path.startswith("/api/messages"):
+            ip = self.get_client_ip(request)
+            now = time.time()
+            window = 60  # 60 seconds
+            limit = 5
+
+            # Keep only timestamps within the last minute
+            timestamps = [t for t in self.request_log.get(ip, []) if now - t < window]
+
+            if len(timestamps) >= limit:
+                return JsonResponse(
+                    {"detail": "Rate limit exceeded. Max 5 messages per minute."},
+                    status=429,
+                )
+
+            timestamps.append(now)
+            self.request_log[ip] = timestamps
+
+        return self.get_response(request)
+
+    def get_client_ip(self, request):
+        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+        if x_forwarded_for:
+            return x_forwarded_for.split(",")[0]
+        return request.META.get("REMOTE_ADDR")
+    
 
 class RequestLoggingMiddleware:
     def __init__(self, get_response):
