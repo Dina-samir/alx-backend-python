@@ -1,5 +1,0 @@
-2025-07-28 08:01:58.333838 - User: Anonymous - Path: /api
-2025-07-28 08:01:58.388587 - User: Anonymous - Path: /favicon.ico
-2025-07-28 08:01:59.599399 - User: Anonymous - Path: /api
-2025-07-28 08:01:59.690801 - User: Anonymous - Path: /favicon.ico
-2025-07-28 08:02:03.779763 - User: Anonymous - Path: /admin/
