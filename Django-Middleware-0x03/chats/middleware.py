@@ -75,11 +75,10 @@ class RolePermissionMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # Only check for authenticated requests
         if request.user.is_authenticated:
-            # Only restrict certain paths, e.g., paths that start with /api/admin-actions/
+            # Only restrict access for certain paths (customize as needed)
             if request.path.startswith('/api/admin-actions/'):
-                user_role = getattr(request.user, 'role', None) 
+                user_role = getattr(request.user, 'role', None)  # assumes `role` is a field on the User model
 
                 if user_role not in ['admin', 'moderator']:
                     return JsonResponse(
