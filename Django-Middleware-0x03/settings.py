@@ -82,7 +82,7 @@ MIDDLEWARE = [
     'chats.middleware.RestrictAccessByTimeMiddleware',
 ]
 
-ROOT_URLCONF = "messaging_app.urls"
+ROOT_URLCONF = "urls"
 
 TEMPLATES = [
     {
@@ -99,7 +99,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "messaging_app.wsgi.application"
+WSGI_APPLICATION = "wsgi.application"
 
 
 # Database
