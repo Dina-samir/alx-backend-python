@@ -83,7 +83,7 @@ MIDDLEWARE = [
     'chats.middleware.OffensiveLanguageMiddleware', 
 ]
 
-ROOT_URLCONF = "urls"
+ROOT_URLCONF = "Django-Middleware-0x03.urls"
 
 TEMPLATES = [
     {
@@ -100,7 +100,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "wsgi.application"
+WSGI_APPLICATION = "Django-Middleware-0x03.wsgi.application"
 
 
 # Database
