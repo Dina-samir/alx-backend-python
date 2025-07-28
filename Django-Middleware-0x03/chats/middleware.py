@@ -3,6 +3,7 @@ from django.http import HttpResponseForbidden
 import logging
 from datetime import datetime
 from django.http import JsonResponse
+import time 
 
 class RestrictAccessByTimeMiddleware:
     def __init__(self, get_response):
@@ -68,3 +69,22 @@ class RequestLoggingMiddleware:
 
         response = self.get_response(request)
         return response
+
+class RolePermissionMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # Only check for authenticated requests
+        if request.user.is_authenticated:
+            # Only restrict certain paths, e.g., paths that start with /api/admin-actions/
+            if request.path.startswith('/api/admin-actions/'):
+                user_role = getattr(request.user, 'role', None) 
+
+                if user_role not in ['admin', 'moderator']:
+                    return JsonResponse(
+                        {'detail': 'Permission denied. Admin or Moderator role required.'},
+                        status=403
+                    )
+
+        return self.get_response(request)
