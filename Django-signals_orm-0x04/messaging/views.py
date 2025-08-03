@@ -7,11 +7,20 @@ from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.utils import timezone
+from django.views.decorators.cache import cache_page
 
 @login_required
+@cache_page(60)  # Cache the view for 60 seconds
 def inbox(request):
     messages = Message.objects.filter(receiver=request.user).select_related('sender').order_by('-timestamp')
     messages = messages.only('id', 'content', 'timestamp')
+    return render(request, 'messaging/inbox.html', {'messages': messages})
+
+
+@cache_page(60)  # Cache this view for 60 seconds
+@login_required
+def inbox_unread_view(request):
+    messages = Message.unread.unread_for_user(request.user)
     return render(request, 'messaging/inbox.html', {'messages': messages})
 
 @login_required
