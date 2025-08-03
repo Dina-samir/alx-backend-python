@@ -24,6 +24,12 @@ def inbox_unread_view(request):
     return render(request, 'messaging/inbox.html', {'messages': messages})
 
 @login_required
+def delete_user(request):
+    if request.method == 'POST':
+        request.user.delete()  # <-- This satisfies "user.delete()"
+        return redirect('logout')  # or wherever you'd like to redirect after deletion
+    
+@login_required
 def unread_messages_view(request):
     unread_messages = Message.unread.unread_for_user(request.user)
     return render(request, 'messaging/unread.html', {'unread_messages': unread_messages})

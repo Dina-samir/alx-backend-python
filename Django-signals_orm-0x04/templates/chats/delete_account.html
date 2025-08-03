@@ -1,0 +1,4 @@
+<form method="POST" action="{% url 'delete_user' %}">
+  {% csrf_token %}
+  <button type="submit">Delete My Account</button>
+</form>
