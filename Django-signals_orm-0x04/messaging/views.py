@@ -13,10 +13,10 @@ def inbox(request):
     messages = Message.objects.filter(receiver=request.user).select_related('sender').order_by('-timestamp')
     return render(request, 'messaging/inbox.html', {'messages': messages})
 
-@login_required
-def sent_messages(request):
-    messages = Message.objects.filter(sender=request.user).select_related('receiver').order_by('-timestamp')
-    return render(request, 'messaging/sent.html', {'messages': messages})
+login_required
+def unread_messages_view(request):
+    unread_messages = Message.unread.for_user(request.user)
+    return render(request, 'messaging/unread.html', {'unread_messages': unread_messages})
 
 @login_required
 def message_detail(request, message_id):
