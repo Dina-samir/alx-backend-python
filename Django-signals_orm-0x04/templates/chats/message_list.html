@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><title>Messages</title></head>
+<body>
+  <h1>Messages</h1>
+  <ul>
+    {% for msg in messages %}
+      <li><b>{{ msg.sender }}</b>: {{ msg.content }} ({{ msg.timestamp }})</li>
+      {% for reply in msg.replies.all %}
+        <ul><li>↳ {{ reply.sender }}: {{ reply.content }}</li></ul>
+      {% endfor %}
+    {% endfor %}
+  </ul>
+</body>
+</html>
