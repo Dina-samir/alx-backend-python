@@ -1,0 +1,11 @@
+# Enable NGINX ingress controller in Minikube
+minikube addons enable ingress
+
+# Apply ingress resource
+kubectl apply -f ingress.yaml
+
+# Verify ingress created
+kubectl get ingress
+
+# Get Minikube cluster IP (to map in /etc/hosts)
+minikube ip
