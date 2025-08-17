@@ -1,0 +1,30 @@
+#!/bin/bash
+# kubctl-0x01 - Scale Django app in Kubernetes and test performance
+
+set -e  # Exit on error
+
+DEPLOYMENT_NAME="django-messaging-deployment"
+SERVICE_NAME="django-messaging-service"
+NAMESPACE="default"
+
+echo "Scaling $DEPLOYMENT_NAME to 3 replicas..."
+kubectl scale deployment $DEPLOYMENT_NAME --replicas=3 -n $NAMESPACE
+
+echo "Deployment scaled."
+
+echo "Checking running pods..."
+kubectl get pods -n $NAMESPACE -o wide
+
+echo "Exposing service locally with port-forwarding..."
+kubectl port-forward svc/$SERVICE_NAME 8000:8000 -n $NAMESPACE &
+PORT_FORWARD_PID=$!
+sleep 5  # wait for port-forwarding to start
+
+echo "Running load test with wrk (10s, 100 connections, 200 threads)..."
+wrk -t200 -c100 -d10s http://127.0.0.1:8000/ || echo "⚠️ wrk not installed. Please install wrk to run load tests."
+
+echo "Monitoring resource usage..."
+kubectl top pods -n $NAMESPACE || echo "⚠️ metrics-server not installed. Install it to use 'kubectl top'."
+
+# Kill port-forwarding
+kill $PORT_FORWARD_PID
