@@ -1,0 +1,26 @@
+#!/bin/bash
+# kubctl-0x02 - Blue-Green Deployment Script for Django app
+
+set -e
+
+echo "Deploying BLUE version..."
+kubectl apply -f blue_deployment.yaml
+
+echo "Deploying GREEN version..."
+kubectl apply -f green_deployment.yaml
+
+echo "Deployments applied."
+
+echo "Checking pods..."
+kubectl get pods -l app=django-messaging -o wide
+
+echo "Checking logs for GREEN version pods..."
+for pod in $(kubectl get pods -l app=django-messaging,version=green -o name); do
+    echo "---- Logs from $pod ----"
+    kubectl logs $pod --tail=20
+done
+
+echo "Switching service traffic from BLUE to GREEN..."
+kubectl apply -f kubeservice.yaml
+
+echo "Zero-downtime deployment complete!"

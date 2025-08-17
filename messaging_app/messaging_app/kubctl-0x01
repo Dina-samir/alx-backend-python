@@ -21,10 +21,10 @@ PORT_FORWARD_PID=$!
 sleep 5  # wait for port-forwarding to start
 
 echo "Running load test with wrk (10s, 100 connections, 200 threads)..."
-wrk -t200 -c100 -d10s http://127.0.0.1:8000/ || echo "⚠️ wrk not installed. Please install wrk to run load tests."
+wrk -t200 -c100 -d10s http://127.0.0.1:8000/ || echo "wrk not installed. Please install wrk to run load tests."
 
 echo "Monitoring resource usage..."
-kubectl top pods -n $NAMESPACE || echo "⚠️ metrics-server not installed. Install it to use 'kubectl top'."
+kubectl top pods -n $NAMESPACE || echo "metrics-server not installed. Install it to use 'kubectl top'."
 
 # Kill port-forwarding
 kill $PORT_FORWARD_PID

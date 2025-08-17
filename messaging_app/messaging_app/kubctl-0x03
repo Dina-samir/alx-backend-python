@@ -1,0 +1,30 @@
+#!/bin/bash
+# kubctl-0x03 - Rolling update for Django app (blue deployment)
+
+set -e
+
+DEPLOYMENT="django-messaging-blue"
+SERVICE="django-messaging-service"
+NAMESPACE="default"
+
+echo "Applying updated deployment (image version 2.0)..."
+kubectl apply -f blue_deployment.yaml
+
+echo "Monitoring rollout status..."
+kubectl rollout status deployment/$DEPLOYMENT -n $NAMESPACE
+
+echo "Starting downtime test with curl (press Ctrl+C to stop)..."
+kubectl port-forward svc/$SERVICE 8000:8000 -n $NAMESPACE &
+PORT_FORWARD_PID=$!
+sleep 5
+
+# Run curl in a loop to test availability during rollout
+for i in {1..20}; do
+    curl -s -o /dev/null -w "Request $i: %{http_code}\n" http://127.0.0.1:8000/ || echo "Request failed!"
+    sleep 1
+done
+
+kill $PORT_FORWARD_PID
+
+echo "Verifying running pods..."
+kubectl get pods -l app=django-messaging,version=blue -o wide

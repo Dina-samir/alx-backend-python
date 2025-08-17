@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: django-messaging
-        image: dinahub/django-messaging:latest  # 🔹 Replace with your built image
+        image: dinahub/django-messaging:latest  # Replace with built image
         ports:
         - containerPort: 8000
         env:
